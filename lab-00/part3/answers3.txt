@@ -1,0 +1,11 @@
+copyji was over 4 times slower than copyij. 
+This is because arrays are stored in memory by row.
+
+For example, a 2x2 array is stored as so, with i = row and j = column:
+[00, 01], [10, 11]. 
+
+Elements within the same row are stored adjacent to each other. 
+copyij copies all the elements within each row before moving on to the next i.
+All the elements are continously stored in memory. 
+copyji copies all the elements within the first column before moving to the next j,
+so it has to jump back and forth in memory.

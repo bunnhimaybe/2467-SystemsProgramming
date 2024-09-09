@@ -1,0 +1,6 @@
+What are the differences between <hello.c> and <hello.i>? 
+
+	<hello.c> is the original source code written by the programmer. 
+	The pre-processor (cpp) prepares the raw text by integrating 
+	header files and defined macros so that the compiler can process
+	the resulting <hello.i> file. 

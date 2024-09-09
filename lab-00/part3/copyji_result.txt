@@ -1,0 +1,5 @@
+Running copyji... done!
+
+real	0m0.128s
+user	0m0.115s
+sys	0m0.012s
