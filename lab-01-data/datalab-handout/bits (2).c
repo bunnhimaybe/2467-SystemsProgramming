@@ -258,6 +258,7 @@ int conditional(int x, int y, int z) {
  */
 int bitParity(int x) {
   /*
+    int = 4 bytes
     arithmetic shift copies sign bit
     5               = 0000 0000 0000 0000 0000 0000 0000 1010
     x >> 16         = 0000 0000 0000 0000 0000 0000 0000 0001
