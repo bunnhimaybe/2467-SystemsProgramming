@@ -313,45 +313,52 @@ Disassembly of section .text:
     1443:	eb f4                	jmp    1439 <phase_1+0x14>
 
 0000000000001445 <phase_2>:
-    1445:	55                   	push   %rbp
-    1446:	53                   	push   %rbx
-    1447:	48 83 ec 28          	sub    $0x28,%rsp
-    144b:	48 89 e6             	mov    %rsp,%rsi
-    144e:	e8 41 07 00 00       	callq  1b94 <read_six_numbers>
-    1453:	83 3c 24 00          	cmpl   $0x0,(%rsp)
-    1457:	78 0a                	js     1463 <phase_2+0x1e>
-    1459:	48 89 e5             	mov    %rsp,%rbp
-    145c:	bb 01 00 00 00       	mov    $0x1,%ebx
-    1461:	eb 13                	jmp    1476 <phase_2+0x31>
+--- FUNCTION PROLOGUE ---
+    1445:	55                   	push   %rbp                     # callee-saved old base pointer
+    1446:	53                   	push   %rbx                     # callee-saved old rbx register
+    1447:	48 83 ec 28          	sub    $0x28,%rsp               # allocate stack space
+    144b:	48 89 e6             	mov    %rsp,%rsi                # stack pointed at second arg? 
+--- FUNCTION BODY ---
+    144e:	e8 41 07 00 00       	callq  1b94 <read_six_numbers>  
+    1453:	83 3c 24 00          	cmpl   $0x0,(%rsp)              # compare stack pointer value with 0
+    1457:	78 0a                	js     1463 <phase_2+0x1e>      # explode if signed
+    1459:	48 89 e5             	mov    %rsp,%rbp                # move stack pointer to base pointer
+    145c:	bb 01 00 00 00       	mov    $0x1,%ebx                # init EBX = 1
+    1461:	eb 13                	jmp    1476 <phase_2+0x31>    
+
     1463:	e8 f0 06 00 00       	callq  1b58 <explode_bomb>
     1468:	eb ef                	jmp    1459 <phase_2+0x14>
-    146a:	83 c3 01             	add    $0x1,%ebx
-    146d:	48 83 c5 04          	add    $0x4,%rbp
-    1471:	83 fb 06             	cmp    $0x6,%ebx
-    1474:	74 11                	je     1487 <phase_2+0x42>
-    1476:	89 d8                	mov    %ebx,%eax
-    1478:	03 45 00             	add    0x0(%rbp),%eax
-    147b:	39 45 04             	cmp    %eax,0x4(%rbp)
-    147e:	74 ea                	je     146a <phase_2+0x25>
-    1480:	e8 d3 06 00 00       	callq  1b58 <explode_bomb>
-    1485:	eb e3                	jmp    146a <phase_2+0x25>
-    1487:	48 83 c4 28          	add    $0x28,%rsp
-    148b:	5b                   	pop    %rbx
-    148c:	5d                   	pop    %rbp
-    148d:	c3                   	retq   
+
+    146a:	83 c3 01             	add    $0x1,%ebx                # repeat loop; inc EBX
+    146d:	48 83 c5 04          	add    $0x4,%rbp                # next stack int
+    1471:	83 fb 06             	cmp    $0x6,%ebx                # check if 6th iteration
+    1474:	74 11                	je     1487 <phase_2+0x42>      # exit loop
+
+    1476:	89 d8                	mov    %ebx,%eax                # move EAX to EBX
+    1478:	03 45 00             	add    0x0(%rbp),%eax           # add EAX to RBP
+    147b:	39 45 04             	cmp    %eax,0x4(%rbp)           # compare eax to next int
+    147e:	74 ea                	je     146a <phase_2+0x25>      # if equal, repeat loop
+    1480:	e8 d3 06 00 00       	callq  1b58 <explode_bomb>      # explode if not equal
+    1485:	eb e3                	jmp    146a <phase_2+0x25>      # proceed
+
+--- FUNCTION EPILOGUE ---
+    1487:	48 83 c4 28          	add    $0x28,%rsp               # deallocate stack space
+    148b:	5b                   	pop    %rbx                     # restore old rbx 
+    148c:	5d                   	pop    %rbp                     # restore old base pointer
+    148d:	c3                   	retq                            # return to caller
 
 000000000000148e <phase_3>:
     148e:	48 83 ec 18          	sub    $0x18,%rsp
-    1492:	48 8d 4c 24 07       	lea    0x7(%rsp),%rcx
-    1497:	48 8d 54 24 0c       	lea    0xc(%rsp),%rdx
-    149c:	4c 8d 44 24 08       	lea    0x8(%rsp),%r8
+    1492:	48 8d 4c 24 07       	lea    0x7(%rsp),%rcx           # arg 1
+    1497:	48 8d 54 24 0c       	lea    0xc(%rsp),%rdx           # arg 2
+    149c:	4c 8d 44 24 08       	lea    0x8(%rsp),%r8            # arg 3
     14a1:	48 8d 35 2e 1d 00 00 	lea    0x1d2e(%rip),%rsi        # 31d6 <_IO_stdin_used+0x1d6>
     14a8:	b8 00 00 00 00       	mov    $0x0,%eax
-    14ad:	e8 8e fc ff ff       	callq  1140 <__isoc99_sscanf@plt>
+    14ad:	e8 8e fc ff ff       	callq  1140 <__isoc99_sscanf@plt>   
     14b2:	83 f8 02             	cmp    $0x2,%eax
-    14b5:	7e 1f                	jle    14d6 <phase_3+0x48>
+    14b5:	7e 1f                	jle    14d6 <phase_3+0x48>      # explode if EAX <= 2
     14b7:	83 7c 24 0c 07       	cmpl   $0x7,0xc(%rsp)
-    14bc:	0f 87 0c 01 00 00    	ja     15ce <phase_3+0x140>
+    14bc:	0f 87 0c 01 00 00    	ja     15ce <phase_3+0x140>     # explode if (rsp + 0xC) > 7
     14c2:	8b 44 24 0c          	mov    0xc(%rsp),%eax
     14c6:	48 8d 15 23 1d 00 00 	lea    0x1d23(%rip),%rdx        # 31f0 <_IO_stdin_used+0x1f0>
     14cd:	48 63 04 82          	movslq (%rdx,%rax,4),%rax
@@ -449,7 +456,7 @@ Disassembly of section .text:
     161a:	eb e4                	jmp    1600 <func4+0x16>
 
 000000000000161c <phase_4>:
-    161c:	48 83 ec 18          	sub    $0x18,%rsp
+    161c:	48 83 ec 18          	sub    $0x18,%rsp               
     1620:	48 8d 4c 24 08       	lea    0x8(%rsp),%rcx
     1625:	48 8d 54 24 0c       	lea    0xc(%rsp),%rdx
     162a:	48 8d 35 14 1e 00 00 	lea    0x1e14(%rip),%rsi        # 3445 <array.0+0x235>

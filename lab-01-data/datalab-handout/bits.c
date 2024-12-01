@@ -118,10 +118,10 @@ REMINDER: Use the ./btest program to check your functions
  *   Rating: 1
  */
 int bitOr(int x, int y) {
-  /* DeMorgan's Laws
-   ~(x | y)  = ~x & ~y
-   ~~(x | y)   = ~(~x & ~y)
-  */
+/* DeMorgan's Laws
+  ~(x | y)  = ~x & ~y
+  ~~(x | y)   = ~(~x & ~y)
+*/
   return ~(~x & ~y);
 }
 
@@ -133,10 +133,10 @@ int bitOr(int x, int y) {
  *   Rating: 1
  */
 int bitAnd(int x, int y) {
-  /*  DeMorgan's Laws
-      ~(x & y) = ~x | ~y
-      ~(~x | ~y) = x & y
-  */
+/*  DeMorgan's Laws
+  ~(x & y) = ~x | ~y
+  ~(~x | ~y) = x & y
+*/
   return ~(~x | ~y);
 }
 
@@ -148,12 +148,12 @@ int bitAnd(int x, int y) {
  *   Rating: 2
  */
 int bitXor(int x, int y) {
-  /*
-   Xor = (x | y) & ~(x & y)
-      
-   DeMorgan's Law
-   (x | y) = ~(~x & ~y)
-  */
+/*
+  Xor = (x | y) & ~(x & y)
+    
+  DeMorgan's Law
+  (x | y) = ~(~x & ~y)
+*/
   return ~(~x & ~y) & ~(x & y);
 }
 
@@ -165,11 +165,11 @@ int bitXor(int x, int y) {
  *   Rating: 2
  */
 int isNotEqual(int x, int y) {
-  /*
-   x ^ y     = 0 if matching,  != 0 if not matching
-   !(x ^ y)  = 1 if matching,  0 if not matching
-   !!(x ^ y) = 0 if matching,  1 if not matching
-  */
+/*
+  x ^ y     = 0 if matching,  != 0 if not matching
+  !(x ^ y)  = 1 if matching,  0 if not matching
+  !!(x ^ y) = 0 if matching,  1 if not matching
+*/
   return !!(x & y)
 }
 
@@ -181,19 +181,19 @@ int isNotEqual(int x, int y) {
  *   Rating: 2
  */
 int copyLSB(int x) {
-  /* 
-   1 = 0000 0001
-   x & 1            isolates LSB
-   (x & 1) << 31    arithmetic left shift, MSB = LSB
+/* 
+  1 = 0000 0001
+  x & 1            isolates LSB
+  (x & 1) << 31    arithmetic left shift, MSB = LSB
 
-   if LSB(x) = 0, (x & 1) << 31     = 0000 0000 0000 0000
-    invert                          = 1111 1111 1111 1111
-    + 1 causes overflow             = 0000 0000 0000 0000
+  if LSB(x) = 0, (x & 1) << 31     = 0000 0000 0000 0000
+  invert                          = 1111 1111 1111 1111
+  + 1 causes overflow             = 0000 0000 0000 0000
 
-   if LSB(x) = 1, (x & 1) << 31     = 1000 0000 0000 0000
-    invert                          = 0111 1111 1111 1111 
-    + 1                             = 1111 1111 1111 1111 
-  */
+  if LSB(x) = 1, (x & 1) << 31     = 1000 0000 0000 0000
+  invert                          = 0111 1111 1111 1111 
+  + 1                             = 1111 1111 1111 1111 
+*/
   return ~( (x & 1) << 31 ) + 1;
 }
 
@@ -204,20 +204,18 @@ int copyLSB(int x) {
  *   Rating: 2
  */
 int specialBits(void) {
-    /* 
-     0xffca 3fff 
-      16^0 * 15 = 15
-      16^1 * 15 = 240
-      16^2 * 15 = 3840
-      16^3 * 3  = 12288
-      16^4 * 10 = 655360
-      16^5 * 12 = 12582912
-      16^6 * 15 = 251658240
-      16^7 * 15 = 4026531840
-      
-      = 4291444735
-    */
-    return 4291444735;
+/* 
+  0xffca 3fff 
+  16^0 * 15 = 15
+  16^1 * 15 = 240
+  16^2 * 15 = 3840
+  16^3 * 3  = 12288
+  16^4 * 10 = 655360
+  16^5 * 12 = 12582912
+  16^6 * 15 = 251658240
+  16^7 * 15 = 4026531840
+*/
+  return 4291444735;
 }
 
 /* 
@@ -228,23 +226,23 @@ int specialBits(void) {
  *   Rating: 4
  */
 int conditional(int x, int y, int z) {
-  /*
-    if x != 0, 
-    - x = 1 (true)
-    - return y
+/*
+  if x != 0, 
+  - x = 1 (true)
+  - return y
 
-    mask = !x = 0 (false)
-    (y & !mask) selects for y       !mask = 1111 1111 (true)
-    (z & mask) = 0
-    
-    if x - 0, 
-    - x = 0 (false)
-    - return z
-    
-    mask = !x = 1111 1111 (true) 
-    (y & !mask) = 0                 !mask = 0000 0000 (false)
-    (z & mask) selects for z 
-  */
+  mask = !x = 0 (false)
+  (y & !mask) selects for y       !mask = 1111 1111 (true)
+  (z & mask) = 0
+  
+  if x - 0, 
+  - x = 0 (false)
+  - return z
+  
+  mask = !x = 1111 1111 (true) 
+  (y & !mask) = 0                 !mask = 0000 0000 (false)
+  (z & mask) selects for z 
+*/
   int mask = !x;
   return (y & !mask) | (z & mask);;
 }
@@ -257,16 +255,18 @@ int conditional(int x, int y, int z) {
  *   Rating: 4
  */
 int bitParity(int x) {
-  /*
-    arithmetic shift copies sign bit
-    5               = 0000 0000 0000 0000 0000 0000 0000 1010
-    x >> 16         = 0000 0000 0000 0000 0000 0000 0000 0001
-    x ^ = (x >> 16) = 0000 0000 0000 0000 0000 0000 0000 1011
-    
-    x >> 8          = 0000 0000 0000 0000 0000 0000 0000 
-
-  */
-  return 2;
+// fold upper half
+  x ^= x >> 16;
+// fold upper 16 bits
+  x ^= x >> 8;
+// fold upper 8 bits
+  x ^= x >> 4;
+// fold upper 4 bits
+  x ^= x >> 2;
+// fold upper 2 bits
+  x ^= x >> 1;
+// LSB contains parity
+  return x & 1;
 }
 
 /*******************************************

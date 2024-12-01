@@ -342,18 +342,18 @@ Disassembly of section .text:
 
 000000000000148e <phase_3>:
     148e:	48 83 ec 18          	sub    rsp,0x18
-    1492:	48 8d 4c 24 07       	lea    rcx,[rsp+0x7]
-    1497:	48 8d 54 24 0c       	lea    rdx,[rsp+0xc]
-    149c:	4c 8d 44 24 08       	lea    r8,[rsp+0x8]
-    14a1:	48 8d 35 2e 1d 00 00 	lea    rsi,[rip+0x1d2e]        # 31d6 <_IO_stdin_used+0x1d6>
+    1492:	48 8d 4c 24 07       	lea    rcx,[rsp+0x7]            # arg 2?
+    1497:	48 8d 54 24 0c       	lea    rdx,[rsp+0xc]            # arg 1
+    149c:	4c 8d 44 24 08       	lea    r8,[rsp+0x8]             # arg 3
+    14a1:	48 8d 35 2e 1d 00 00 	lea    rsi,[rip+0x1d2e]         # 31d6 <_IO_stdin_used+0x1d6>
     14a8:	b8 00 00 00 00       	mov    eax,0x0
     14ad:	e8 8e fc ff ff       	call   1140 <__isoc99_sscanf@plt>
-    14b2:	83 f8 02             	cmp    eax,0x2
-    14b5:	7e 1f                	jle    14d6 <phase_3+0x48>
-    14b7:	83 7c 24 0c 07       	cmp    DWORD PTR [rsp+0xc],0x7
-    14bc:	0f 87 0c 01 00 00    	ja     15ce <phase_3+0x140>
-    14c2:	8b 44 24 0c          	mov    eax,DWORD PTR [rsp+0xc]
-    14c6:	48 8d 15 23 1d 00 00 	lea    rdx,[rip+0x1d23]        # 31f0 <_IO_stdin_used+0x1f0>
+    14b2:	83 f8 02             	cmp    eax,0x2                  # at least 3 arguments
+    14b5:	7e 1f                	jle    14d6 <phase_3+0x48>      #EXPLODE
+    14b7:	83 7c 24 0c 07       	cmp    DWORD PTR [rsp+0xc],0x7  # arg 2 < 0x7
+    14bc:	0f 87 0c 01 00 00    	ja     15ce <phase_3+0x140>     # EXPLODE
+    14c2:	8b 44 24 0c          	mov    eax,DWORD PTR [rsp+0xc]  # EAX = arg 2
+    14c6:	48 8d 15 23 1d 00 00 	lea    rdx,[rip+0x1d23]         # 31f0 <_IO_stdin_used+0x1f0>
     14cd:	48 63 04 82          	movsxd rax,DWORD PTR [rdx+rax*4]
     14d1:	48 01 d0             	add    rax,rdx
     14d4:	ff e0                	jmp    rax
@@ -426,9 +426,9 @@ Disassembly of section .text:
 
 00000000000015ea <func4>:
     15ea:	53                   	push   rbx
-    15eb:	89 d0                	mov    eax,edx
-    15ed:	29 f0                	sub    eax,esi
-    15ef:	89 c3                	mov    ebx,eax
+    15eb:	89 d0                	mov    eax,edx              # EAX = EDX (upper bound)
+    15ed:	29 f0                	sub    eax,esi              # EAX = EAX - ESI 
+    15ef:	89 c3                	mov    ebx,eax              # EBX = EAX
     15f1:	c1 eb 1f             	shr    ebx,0x1f
     15f4:	01 c3                	add    ebx,eax
     15f6:	d1 fb                	sar    ebx,1
@@ -449,25 +449,25 @@ Disassembly of section .text:
     161a:	eb e4                	jmp    1600 <func4+0x16>
 
 000000000000161c <phase_4>:
-    161c:	48 83 ec 18          	sub    rsp,0x18
-    1620:	48 8d 4c 24 08       	lea    rcx,[rsp+0x8]
-    1625:	48 8d 54 24 0c       	lea    rdx,[rsp+0xc]
+    161c:	48 83 ec 18          	sub    rsp,0x18                 # allocate memory on stack 
+    1620:	48 8d 4c 24 08       	lea    rcx,[rsp+0x8]            # RCX = #2
+    1625:	48 8d 54 24 0c       	lea    rdx,[rsp+0xc]            # RDX = #1
     162a:	48 8d 35 14 1e 00 00 	lea    rsi,[rip+0x1e14]        # 3445 <array.0+0x235>
     1631:	b8 00 00 00 00       	mov    eax,0x0
     1636:	e8 05 fb ff ff       	call   1140 <__isoc99_sscanf@plt>
-    163b:	83 f8 02             	cmp    eax,0x2
-    163e:	75 07                	jne    1647 <phase_4+0x2b>
+    163b:	83 f8 02             	cmp    eax,0x2                  # 2 args
+    163e:	75 07                	jne    1647 <phase_4+0x2b>      # EXPLODE 
     1640:	83 7c 24 0c 0e       	cmp    DWORD PTR [rsp+0xc],0xe
-    1645:	76 05                	jbe    164c <phase_4+0x30>
-    1647:	e8 0c 05 00 00       	call   1b58 <explode_bomb>
-    164c:	ba 0e 00 00 00       	mov    edx,0xe
+    1645:	76 05                	jbe    164c <phase_4+0x30>      # RDX <= 14
+    1647:	e8 0c 05 00 00       	call   1b58 <explode_bomb>      # EXPLODE
+    164c:	ba 0e 00 00 00       	mov    edx,0xe                  # EDX = 14
     1651:	be 00 00 00 00       	mov    esi,0x0
-    1656:	8b 7c 24 0c          	mov    edi,DWORD PTR [rsp+0xc]
+    1656:	8b 7c 24 0c          	mov    edi,DWORD PTR [rsp+0xc]  # RDI = RDX
     165a:	e8 8b ff ff ff       	call   15ea <func4>
     165f:	83 f8 0b             	cmp    eax,0xb
-    1662:	75 07                	jne    166b <phase_4+0x4f>
+    1662:	75 07                	jne    166b <phase_4+0x4f>      # func4 = 11
     1664:	83 7c 24 08 0b       	cmp    DWORD PTR [rsp+0x8],0xb
-    1669:	74 05                	je     1670 <phase_4+0x54>
+    1669:	74 05                	je     1670 <phase_4+0x54>      # RSP + 0X8 = 0XB
     166b:	e8 e8 04 00 00       	call   1b58 <explode_bomb>
     1670:	48 83 c4 18          	add    rsp,0x18
     1674:	c3                   	ret    
@@ -476,21 +476,22 @@ Disassembly of section .text:
     1675:	53                   	push   rbx
     1676:	48 83 ec 10          	sub    rsp,0x10
     167a:	48 89 fb             	mov    rbx,rdi
+
     167d:	e8 67 02 00 00       	call   18e9 <string_length>
-    1682:	83 f8 06             	cmp    eax,0x6
+    1682:	83 f8 06             	cmp    eax,0x6                  # string length = 6
     1685:	75 45                	jne    16cc <phase_5+0x57>
     1687:	b8 00 00 00 00       	mov    eax,0x0
-    168c:	48 8d 0d 7d 1b 00 00 	lea    rcx,[rip+0x1b7d]        # 3210 <array.0>
-    1693:	0f b6 14 03          	movzx  edx,BYTE PTR [rbx+rax*1]
-    1697:	83 e2 0f             	and    edx,0xf
-    169a:	0f b6 14 11          	movzx  edx,BYTE PTR [rcx+rdx*1]
+    168c:	48 8d 0d 7d 1b 00 00 	lea    rcx,[rip+0x1b7d]         # 3210 <array.0>    RCX = array
+    1693:	0f b6 14 03          	movzx  edx,BYTE PTR [rbx+rax*1] # char 1
+    1697:	83 e2 0f             	and    edx,0xf                  # mask lower 4 bits
+    169a:	0f b6 14 11          	movzx  edx,BYTE PTR [rcx+rdx*1] # RCX[1] = lower dl
     169e:	88 54 04 09          	mov    BYTE PTR [rsp+rax*1+0x9],dl
     16a2:	48 83 c0 01          	add    rax,0x1
-    16a6:	48 83 f8 06          	cmp    rax,0x6
-    16aa:	75 e7                	jne    1693 <phase_5+0x1e>
+    16a6:	48 83 f8 06          	cmp    rax,0x6                  # 6 iterations
+    16aa:	75 e7                	jne    1693 <phase_5+0x1e> 
     16ac:	c6 44 24 0f 00       	mov    BYTE PTR [rsp+0xf],0x0
     16b1:	48 8d 7c 24 09       	lea    rdi,[rsp+0x9]
-    16b6:	48 8d 35 22 1b 00 00 	lea    rsi,[rip+0x1b22]        # 31df <_IO_stdin_used+0x1df>
+    16b6:	48 8d 35 22 1b 00 00 	lea    rsi,[rip+0x1b22]         # 31df <_IO_stdin_used+0x1df>
     16bd:	e8 44 02 00 00       	call   1906 <strings_not_equal>
     16c2:	85 c0                	test   eax,eax
     16c4:	75 0d                	jne    16d3 <phase_5+0x5e>
@@ -514,7 +515,7 @@ Disassembly of section .text:
     16ee:	e8 a1 04 00 00       	call   1b94 <read_six_numbers>
     16f3:	41 be 01 00 00 00    	mov    r14d,0x1
     16f9:	4d 89 ec             	mov    r12,r13
-    16fc:	eb 28                	jmp    1726 <phase_6+0x4c>
+    16fc:	eb 28                	jmp    1726 <phase_6+0x4c>          # from 1
     16fe:	e8 55 04 00 00       	call   1b58 <explode_bomb>
     1703:	eb 30                	jmp    1735 <phase_6+0x5b>
     1705:	48 83 c3 01          	add    rbx,0x1
@@ -527,12 +528,12 @@ Disassembly of section .text:
     171c:	eb e7                	jmp    1705 <phase_6+0x2b>
     171e:	49 83 c6 01          	add    r14,0x1
     1722:	49 83 c5 04          	add    r13,0x4
-    1726:	4c 89 ed             	mov    rbp,r13
+    1726:	4c 89 ed             	mov    rbp,r13                      # to 1
     1729:	41 8b 45 00          	mov    eax,DWORD PTR [r13+0x0]
     172d:	83 e8 01             	sub    eax,0x1
-    1730:	83 f8 05             	cmp    eax,0x5
+    1730:	83 f8 05             	cmp    eax,0x5                      # EAX > 0x5
     1733:	77 c9                	ja     16fe <phase_6+0x24>
-    1735:	41 83 fe 05          	cmp    r14d,0x5
+    1735:	41 83 fe 05          	cmp    r14d,0x5                     # R14d > 0x5?
     1739:	7f 05                	jg     1740 <phase_6+0x66>
     173b:	4c 89 f3             	mov    rbx,r14
     173e:	eb ce                	jmp    170e <phase_6+0x34>
